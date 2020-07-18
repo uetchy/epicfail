@@ -3,6 +3,6 @@
 import handleErrors from 'epicfail';
 import fs from 'fs';
 
-handleErrors();
+handleErrors({ showRelatedIssues: true });
 
 fs.readFileSync('foo');

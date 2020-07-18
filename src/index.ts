@@ -1,147 +1,81 @@
-import { readFileSync } from 'fs';
-import { dirname } from 'path';
-import pkgUp from 'pkg-up';
 import chalk from 'chalk';
 import link from 'terminal-link';
-import { run as runEnvinfo } from 'envinfo';
-
-export interface EnvInfo {
-  System: ('OS' | 'CPU' | 'Memory' | 'Shell')[];
-  Binaries: ('Node' | 'Yarn' | 'npm' | 'Watchman')[];
-  Managers: (
-    | 'Cargo'
-    | 'CocoaPods'
-    | 'Composer'
-    | 'Gradle'
-    | 'Homebrew'
-    | 'Maven'
-    | 'pip2'
-    | 'pip3'
-    | 'RubyGems'
-  )[];
-  Utilities: (
-    | 'CMake'
-    | 'Make'
-    | 'GCC'
-    | 'Git'
-    | 'Mercurial'
-    | 'Clang'
-    | 'Subversion'
-  )[];
-  Servers: ('Apache' | 'Nginx')[];
-  Virtualization: {
-    Docker: string;
-    Parallels: string;
-    VirtualBox: string;
-  };
-  SDKs: {
-    'iOS SDK': 'Platforms'[];
-    'Android SDK': ('API Levels' | 'Build Tools' | 'System Images')[];
-  };
-  IDEs: (
-    | 'Android Studio'
-    | 'Atom'
-    | 'Emacs'
-    | 'Nano'
-    | 'VSCode'
-    | 'Vim'
-    | 'Xcode'
-  )[];
-  Languages: (
-    | 'Bash'
-    | 'Elixir'
-    | 'Go'
-    | 'Java'
-    | 'Perl'
-    | 'PHP'
-    | 'Python'
-    | 'Python3'
-    | 'R'
-    | 'Ruby'
-    | 'Rust'
-  )[];
-  Databases: ('MongoDB' | 'MySQL' | 'PostgreSQL' | 'SQLite')[];
-  Browsers: (
-    | 'Chrome'
-    | 'Chrome Canary'
-    | 'Firefox'
-    | 'Firefox Developer Edition'
-    | 'Firefox Nightly'
-    | 'Safari'
-    | 'Safari Technology Preview'
-  )[];
-  npmPackages: string[];
-  npmGlobalPackages: string[];
-}
-
-function readJSON(path: string) {
-  return JSON.parse(readFileSync(path, 'utf8'));
-}
+import { readJSON, getModulePackagePath } from './json';
+import { EnvInfo, genEnv } from './envinfo';
+import { Stash, title } from './term';
+import { findIssues, guessRepo } from './github';
 
 interface Option {
   showStackTrace?: boolean;
-  onError?: (err: Error, ...rest: any[]) => undefined | string;
+  showRelatedIssues?: boolean;
   envinfo?: Partial<EnvInfo>;
-}
-
-function getModulePackagePath() {
-  return pkgUp.sync({ cwd: dirname(module.parent!.filename) });
+  onError?: (err: Error, ...rest: any[]) => undefined | string;
 }
 
 module.exports = function handleErrors({
   showStackTrace = true,
-  onError,
+  showRelatedIssues = false,
   envinfo = {},
+  onError,
 }: Option = {}) {
-  const pkgPath = getModulePackagePath();
+  const pkgPath = getModulePackagePath(module.parent!.filename);
   if (!pkgPath) throw new Error('Could not find package.json for the module.');
-  const pkg = readJSON(pkgPath);
 
-  async function handleError(err: Error, ...rest: any[]): Promise<void> {
-    const reporterURL = pkg?.bugs?.url ?? pkg?.homepage ?? pkg?.author;
-    let errorID: string | undefined = undefined;
-
-    if (onError) {
-      errorID = onError(err, ...rest);
-    }
+  const handleError = async (err: Error, ...rest: any[]): Promise<void> => {
+    const pkg = readJSON(pkgPath);
+    const stash = new Stash();
+    const reporterURL =
+      pkg?.bugs?.url ?? pkg?.bugs ?? pkg?.homepage ?? pkg?.author;
+    const repo = guessRepo(reporterURL);
+    const eventID = onError ? onError(err, ...rest) : undefined;
 
     // show error message
-    console.log(chalk.red.inverse(` ${err.name} `), chalk.red(err.message));
+    stash.push(title(chalk.red, err.name, err.message));
 
     // show stack trace
     if (showStackTrace && err.stack) {
-      console.log('\n' + chalk.gray(err.stack));
+      stash.push(
+        '\n' +
+          chalk.gray('```\n') +
+          chalk.gray(err.stack) +
+          chalk.gray('\n```'),
+      );
     }
 
     // show additional env info
-    const env = await runEnvinfo(
-      {
-        ...{
-          System: ['OS'],
-          Binaries: ['Node', 'Yarn', 'npm'],
-        },
-        ...envinfo,
-      },
-      {
-        markdown: true,
-        showNotFound: true,
-      },
-    );
-    console.log(chalk.green('\nEnvironment information'));
-    console.log(`## Module\n - ${pkg.name}: ${pkg.version}`);
-    console.log(env.trim());
+    stash.push(await genEnv(envinfo, pkg));
+
+    // search related issues
+    if (showRelatedIssues && repo) {
+      const issues = await findIssues(err.message, repo);
+      if (issues && issues.length > 0) {
+        stash.push('\n' + title(chalk.white, 'Issues'));
+        stash.push(
+          issues
+            .map(
+              (issue: any) =>
+                `${chalk.green(`#${issue.number}`)} ${issue.title}`,
+            )
+            .join('\n'),
+        );
+      }
+    }
 
     // guide to bug tracker
     if (reporterURL) {
-      console.log(
+      stash.push(
         `\nIf you think this is a bug, please report at ${link(
           chalk.yellow(reporterURL),
           reporterURL,
           { fallback: false },
-        )}${errorID ? ` with event id ${chalk.bold.magenta(errorID)}` : ''}.`,
+        )} along with the information above${
+          eventID ? ` and event id ${chalk.bold.magenta(eventID)}` : ''
+        }.`,
       );
     }
-  }
+
+    console.log(stash.toString());
+  };
 
   process.on('unhandledRejection', handleError);
   process.on('uncaughtException', handleError);
