@@ -51,3 +51,17 @@ fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, ope
 ```
 
 ![Sentry integration](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-sentry.png)
+
+### Custom envinfo
+
+```js
+import epicfail from 'epicfail';
+
+epicfail({
+  envinfo: {
+    System: ['OS', 'CPU'],
+    Binaries: ['Node', 'Yarn', 'npm'],
+    Utilities: ['Git'],
+  },
+});
+```
