@@ -1,8 +1,10 @@
-#!/usr/bin/env node -r esm
+#!/usr/bin/env node
 
-import handleErrors from 'epicfail';
-import fs from 'fs';
+const handleErrors = require('epicfail');
+const fs = require('fs');
 
-handleErrors();
+handleErrors({
+  showStackTrace: false,
+});
 
 fs.readFileSync('foo');
