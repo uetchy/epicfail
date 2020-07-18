@@ -38,9 +38,7 @@ import Sentry from '@sentry/node';
 
 epicfail({
   showStackTrace: false,
-  onError: (err) => {
-    return Sentry.captureException(err); // will returns event_id issued at Sentry
-  },
+  onError: Sentry.captureException, // will returns event_id issued at Sentry
 });
 
 Sentry.init({

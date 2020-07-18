@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "author": "Yasuaki Uechi <y@uechi.io> (https://uechi.io)",
   "dependencies": {
+    "@sentry/node": "^5.19.2",
     "epicfail": "link:..",
     "esm": "^3.2.25"
   },
