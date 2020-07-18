@@ -12,7 +12,7 @@ interface Option {
   onError?: (err: Error, ...rest: any[]) => undefined | string;
 }
 
-module.exports = function handleErrors({
+export = function handleErrors({
   showStackTrace = true,
   showRelatedIssues = false,
   envinfo = {},
