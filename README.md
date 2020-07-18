@@ -33,8 +33,8 @@ fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, ope
 ### Sentry integration
 
 ```js
-const epicfail = require('epicfail');
-const Sentry = require('@sentry/node');
+import epicfail from 'epicfail';
+import Sentry from '@sentry/node';
 
 epicfail({
   showStackTrace: false,
@@ -44,12 +44,12 @@ epicfail({
 });
 
 Sentry.init({
-  dsn:
-    'https://57ccd1e2e28147f8953e2ec07ee117f6@o48152.ingest.sentry.io/5343860',
+  dsn: process.env.SENTRY_DSN,
   defaultIntegrations: false,
 });
 
-fs.readFileSync('foo');
+// your CLI app code goes here
+fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, open 'foo'"
 ```
 
 ![Sentry integration](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-sentry.png)
