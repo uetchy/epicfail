@@ -9,15 +9,19 @@ function readJSON(path: string) {
 }
 
 interface Option {
-  showStack?: boolean;
+  showStackTrace?: boolean;
   onError?: (err: Error, ...rest: any[]) => undefined | string;
 }
 
-export default function handleErrors({
-  showStack = true,
+function getModulePackagePath() {
+  return pkgUp.sync({ cwd: dirname(module.parent!.filename) });
+}
+
+export = function handleErrors({
+  showStackTrace = true,
   onError,
 }: Option = {}) {
-  const pkgPath = pkgUp.sync({ cwd: dirname(module.parent!.filename) });
+  const pkgPath = getModulePackagePath();
   if (!pkgPath) throw new Error('Could not find package.json for the module.');
   const pkg = readJSON(pkgPath);
 
@@ -31,7 +35,7 @@ export default function handleErrors({
 
     console.log(chalk.red.inverse(` ${err.name} `), chalk.red(err.message));
 
-    if (showStack && err.stack) {
+    if (showStackTrace && err.stack) {
       console.log('\n' + chalk.gray(err.stack));
     }
 
@@ -41,12 +45,12 @@ export default function handleErrors({
           chalk.yellow(reporterURL),
           reporterURL,
           { fallback: false },
-        )}${errorID ? ` with error id ${chalk.bold.magenta(errorID)}` : ''}.`,
+        )}${errorID ? ` with event id ${chalk.bold.magenta(errorID)}` : ''}.`,
       );
     }
-    process.exit(1);
+    // process.exit(1);
   }
 
   process.on('unhandledRejection', handleError);
   process.on('uncaughtException', handleError);
-}
+};
