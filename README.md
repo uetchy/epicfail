@@ -117,7 +117,8 @@ import Sentry from '@sentry/node';
 
 epicfail({
   stacktrace: false,
-  onError: Sentry.captureException, // will returns event_id issued at Sentry
+  env: false,
+  onError: Sentry.captureException, // will returns event_id issued by Sentry
 });
 
 Sentry.init({
