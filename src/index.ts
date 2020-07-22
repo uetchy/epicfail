@@ -7,8 +7,9 @@ import { findIssues, guessRepo, linkToNewIssue } from './github';
 
 interface Option {
   stacktrace?: boolean;
-  env?: Partial<EnvInfo> | false;
   issues?: boolean;
+  message?: boolean;
+  env?: Partial<EnvInfo> | false;
   onError?: (err: Error, ...rest: any[]) => undefined | string;
 }
 
@@ -69,22 +70,29 @@ function renderBugTracker(
   }.`;
 }
 
-export = function handleErrors({
-  stacktrace = true,
-  issues = false,
-  env,
-  onError,
-}: Option = {}) {
+interface EpicError extends Error {
+  epicfail?: Option;
+}
+
+export = function handleErrors(cliFlags: Option = {}) {
   const pkgPath = getModulePackagePath(module.parent!.filename);
   if (!pkgPath) throw new Error('Could not find package.json for the module.');
 
-  const handleError = async (err: Error, ...rest: any[]): Promise<void> => {
+  const handleError = async (err: EpicError, ...rest: any[]): Promise<void> => {
+    // handle error
     if (!(err instanceof Error)) {
       err = new Error(JSON.stringify(err, null, 2));
     }
+    const {
+      stacktrace = true,
+      issues = false,
+      message = true,
+      env,
+      onError,
+    } = { ...cliFlags, ...(err.epicfail ?? {}) };
 
-    const pkg = readJSON(pkgPath);
     const stash = new Stash();
+    const pkg = readJSON(pkgPath);
     const reporterURL =
       pkg?.bugs?.url ?? pkg?.bugs ?? pkg?.homepage ?? pkg?.author;
     const repo = guessRepo(reporterURL);
@@ -110,7 +118,7 @@ export = function handleErrors({
     }
 
     // guide to bug tracker
-    if (reporterURL) {
+    if (message && reporterURL) {
       stash.push(renderBugTracker(reporterURL, stash, repo, eventID));
     }
 
