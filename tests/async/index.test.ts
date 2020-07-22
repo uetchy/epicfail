@@ -1,4 +1,5 @@
 import execa from 'execa';
+import strip from 'strip-ansi';
 import { join } from 'path';
 
 let res: execa.ExecaReturnValue;
@@ -18,7 +19,7 @@ describe('async', () => {
   });
 
   it('reporter', () => {
-    expect(res.stdout).toContain(
+    expect(strip(res.stdout)).toContain(
       'please report at https://github.com/uetchy/simple/issues',
     );
   });

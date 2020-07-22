@@ -13,8 +13,13 @@ export interface EpicfailOption {
   onError?: (err: Error, ...rest: any[]) => undefined | string;
 }
 
-export interface EpicfailError extends Error {
+export class EpicfailError extends Error {
   epicfail?: EpicfailOption;
+
+  constructor(message?: string) {
+    super(message);
+    this.epicfail = {};
+  }
 }
 
 export default function handleErrors(cliFlags: EpicfailOption = {}) {
