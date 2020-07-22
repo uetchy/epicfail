@@ -17,3 +17,9 @@ export async function findIssues(q: string, repo: string) {
 export function guessRepo(str: string): string | undefined {
   return /(?:(?<=github\.com\/)|^)([\w\-_]+\/[\w.\-_]+)/.exec(str)?.[1];
 }
+
+export function linkToNewIssue(repo: string, body: string | undefined) {
+  return `https://github.com/${repo}/issues/new${
+    body ? `?body=${encodeURIComponent(body)}` : ''
+  }`;
+}

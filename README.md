@@ -41,33 +41,37 @@ fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, ope
 
 ## Options
 
-### showStackTrace (`default: true`)
+### stacktrace (`default: true`)
+
+Show stack trace.
 
 ```js
 import epicfail from 'epicfail';
 
 epicfail({
-  showStackTrace: false,
+  stacktrace: false,
 });
 ```
 
 ![Without stacktrace](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/without-stacktrace.png)
 
-### showRelatedIssues (`default: false`)
+### issues (`default: false`)
+
+Search and show related issues.
 
 ```js
 import epicfail from 'epicfail';
 
 epicfail({
-  showRelatedIssues: true,
+  issues: true,
 });
 ```
 
 ![With issues](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-issues.png)
 
-### envinfo
+### env
 
-Shows environment information on the errors. You can find all possible options [here](https://github.com/tabrindle/envinfo#cli-usage).
+Show environment information. You can find all possible options [here](https://github.com/tabrindle/envinfo#cli-usage). Set to `false` to disable it.
 
 ```js
 import epicfail from 'epicfail';
@@ -81,8 +85,6 @@ epicfail({
 });
 ```
 
-![With envinfo](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-envinfo.png)
-
 Default values:
 
 ```json
@@ -91,6 +93,8 @@ Default values:
   "Binaries": ["Node"]
 }
 ```
+
+![With envinfo](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-envinfo.png)
 
 ## Advanced Usage
 
@@ -101,7 +105,7 @@ import epicfail from 'epicfail';
 import Sentry from '@sentry/node';
 
 epicfail({
-  showStackTrace: false,
+  stacktrace: false,
   onError: Sentry.captureException, // will returns event_id issued at Sentry
 });
 
