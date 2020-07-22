@@ -97,7 +97,7 @@ function renderError(err: Error) {
   const title = err.name;
   return (
     (title !== 'Error' ? makeTitle(chalk.red, title) + '\n' : '') +
-    chalk.red('# ' + err.message)
+    chalk.red(err.message)
   );
 }
 
