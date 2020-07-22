@@ -6,6 +6,7 @@
   "scripts": {
     "build": "shx rm -rf dist && tsc",
     "dev": "tsc -w",
+    "prepublishOnly": "yarn build",
     "test": "jest"
   },
   "dependencies": {
