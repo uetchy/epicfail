@@ -1,16 +1,78 @@
 import chalk from 'chalk';
 import link from 'terminal-link';
-import { readJSON, getModulePackagePath } from './json';
 import { EnvInfo, genEnv } from './envinfo';
-import { Stash, title } from './term';
 import { findIssues, guessRepo, linkToNewIssue } from './github';
+import { getModulePackagePath, readJSON } from './json';
+import { Stash, title } from './term';
 
-interface Option {
+export interface EpicfailOption {
   stacktrace?: boolean;
   issues?: boolean;
   message?: boolean;
   env?: Partial<EnvInfo> | false;
   onError?: (err: Error, ...rest: any[]) => undefined | string;
+}
+
+export interface EpicfailError extends Error {
+  epicfail?: EpicfailOption;
+}
+
+export default function handleErrors(cliFlags: EpicfailOption = {}) {
+  const pkgPath = getModulePackagePath(module.parent!.filename);
+  if (!pkgPath) throw new Error('Could not find package.json for the module.');
+
+  const handleError = async (
+    err: EpicfailError,
+    ...rest: any[]
+  ): Promise<void> => {
+    // handle error
+    if (!(err instanceof Error)) {
+      err = new Error(JSON.stringify(err, null, 2));
+    }
+    const {
+      stacktrace = true,
+      issues = false,
+      message = true,
+      env,
+      onError,
+    } = { ...cliFlags, ...(err.epicfail ?? {}) };
+
+    const stash = new Stash();
+    const pkg = readJSON(pkgPath);
+    const reporterURL =
+      pkg?.bugs?.url ?? pkg?.bugs ?? pkg?.homepage ?? pkg?.author;
+    const repo = guessRepo(reporterURL);
+    const eventID = onError ? onError(err, ...rest) : undefined;
+
+    // show error message
+    stash.push(renderError(err));
+
+    // show stack trace
+    if (stacktrace && err.stack) {
+      stash.push(renderStacktrace(err.stack), { extra: true });
+    }
+
+    // show additional env info
+    if (env !== false) {
+      stash.push(await renderEnv(env, pkg));
+    }
+
+    // search related issues
+    if (issues && repo) {
+      const res = await renderIssues(err.message, repo);
+      if (res) stash.push(res);
+    }
+
+    // guide to bug tracker
+    if (message && reporterURL) {
+      stash.push(renderBugTracker(reporterURL, stash, repo, eventID));
+    }
+
+    stash.render();
+  };
+
+  process.on('unhandledRejection', handleError);
+  process.on('uncaughtException', handleError);
 }
 
 function renderError(err: Error) {
@@ -69,62 +131,3 @@ function renderBugTracker(
     eventID ? ` and event id ${chalk.bold.magenta(eventID)}` : ''
   }.`;
 }
-
-interface EpicError extends Error {
-  epicfail?: Option;
-}
-
-export = function handleErrors(cliFlags: Option = {}) {
-  const pkgPath = getModulePackagePath(module.parent!.filename);
-  if (!pkgPath) throw new Error('Could not find package.json for the module.');
-
-  const handleError = async (err: EpicError, ...rest: any[]): Promise<void> => {
-    // handle error
-    if (!(err instanceof Error)) {
-      err = new Error(JSON.stringify(err, null, 2));
-    }
-    const {
-      stacktrace = true,
-      issues = false,
-      message = true,
-      env,
-      onError,
-    } = { ...cliFlags, ...(err.epicfail ?? {}) };
-
-    const stash = new Stash();
-    const pkg = readJSON(pkgPath);
-    const reporterURL =
-      pkg?.bugs?.url ?? pkg?.bugs ?? pkg?.homepage ?? pkg?.author;
-    const repo = guessRepo(reporterURL);
-    const eventID = onError ? onError(err, ...rest) : undefined;
-
-    // show error message
-    stash.push(renderError(err));
-
-    // show stack trace
-    if (stacktrace && err.stack) {
-      stash.push(renderStacktrace(err.stack), { extra: true });
-    }
-
-    // show additional env info
-    if (env !== false) {
-      stash.push(await renderEnv(env, pkg));
-    }
-
-    // search related issues
-    if (issues && repo) {
-      const res = await renderIssues(err.message, repo);
-      if (res) stash.push(res);
-    }
-
-    // guide to bug tracker
-    if (message && reporterURL) {
-      stash.push(renderBugTracker(reporterURL, stash, repo, eventID));
-    }
-
-    stash.render();
-  };
-
-  process.on('unhandledRejection', handleError);
-  process.on('uncaughtException', handleError);
-};

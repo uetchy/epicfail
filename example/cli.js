@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const handleErrors = require('epicfail');
+const handleErrors = require('epicfail').default;
 const Sentry = require('@sentry/node');
 const fs = require('fs');
 

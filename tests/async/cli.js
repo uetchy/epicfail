@@ -1,5 +1,4 @@
-const handleErrors = require('../..');
-const fs = require('fs');
+const handleErrors = require('../..').default;
 
 handleErrors();
 
