@@ -13,9 +13,10 @@
 
 > epicfail handles `unhandledRejection` and `uncaughtException` with graceful error message.
 
+1. ⬇️ GitHub Issues-ready Markdown output
 1. 🌐 Show bug tracker URL (`bugs.url` in `package.json`)
-1. ⬇️ GitHub Issues-ready error logs (Markdown)
-1. 👀 Suggest related issues
+1. 🍁 Show environments (OS, Node.js version, etc)
+1. 👀 Suggest related issues in GitHub
 1. 🛠 Integration with external error logging services
 
 ## Install
@@ -77,7 +78,7 @@ Show environment information. You can find all possible options [here](https://g
 import epicfail from 'epicfail';
 
 epicfail({
-  envinfo: {
+  env: {
     System: ['OS', 'CPU'],
     Binaries: ['Node', 'Yarn', 'npm'],
     Utilities: ['Git'],
