@@ -72,25 +72,46 @@ export interface EnvInfo {
 }
 
 export async function genEnv(
-  envinfo: Partial<EnvInfo>,
+  envinfo: Partial<EnvInfo> | undefined,
   pkg: any,
 ): Promise<string> {
   const env = await runEnvinfo(
-    {
-      ...{
-        System: ['OS'],
-        Binaries: ['Node'],
-      },
-      ...envinfo,
+    envinfo ?? {
+      System: ['OS'],
+      Binaries: ['Node'],
     },
     {
-      markdown: true,
+      json: true,
       showNotFound: true,
     },
   );
-  let res = '\n';
-  res += title(chalk.green, 'Environment') + '\n';
-  res += `## Module\n - ${pkg.name}: ${pkg.version}\n`;
-  res += env.trim();
-  return res;
+
+  const res = [];
+  res.push(title(chalk.green, 'Environment'));
+  res.push(`- ${pkg.name}: ${pkg.version}`);
+  res.push(
+    Object.entries<any>(JSON.parse(env))
+      .reduce(
+        (s: any, i: any) => [
+          ...s,
+          ...Object.entries(i[1]).map(([k, v]) => [`${i[0]} > ${k}`, v]),
+        ],
+        [],
+      )
+      .map(([k, v]) => `- ${k}: ${parseEnvInfo(v)}`)
+      .join('\n'),
+  );
+  return chalk.green(res.join('\n'));
+}
+
+function parseEnvInfo(v: any): string {
+  if (typeof v === 'string') {
+    return v;
+  } else if (typeof v === 'object' && 'version' in v) {
+    return `${v.version}${v.path ? ` - ${v.path}` : ''}`;
+  } else if (Array.isArray(v)) {
+    return v.join(', ');
+  } else {
+    return JSON.stringify(v);
+  }
 }

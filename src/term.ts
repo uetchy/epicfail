@@ -1,20 +1,39 @@
+import stripAnsi from 'strip-ansi';
+
+interface Item {
+  body: string;
+  extra: boolean;
+}
+
 export class Stash {
-  private stash: string[] = [];
+  private stash: Item[] = [];
 
   constructor() {}
 
-  push(...log: string[]) {
-    this.stash.push(log.join(' '));
+  push(log: string, { extra = false } = {}) {
+    this.stash.push({ body: log, extra });
   }
 
-  toString() {
-    return this.stash.join('\n');
+  toString({ extra = true } = {}) {
+    return stripAnsi(
+      this.stash
+        .filter((item) => (extra ? true : !item.extra))
+        .map((item) => item.body)
+        .join('\n'),
+    );
+  }
+
+  toCLIString() {
+    return this.stash.map((item) => item.body).join('\n');
+  }
+
+  render() {
+    console.log(this.toCLIString());
   }
 }
 
 export function title(color: any, title: string, ...rest: string[]): string {
   return (
-    color.inverse(` ${title} `) +
-    (rest.length > 0 ? ' ' + color(rest.join(' ')) : '')
+    color(`# ${title}`) + (rest.length > 0 ? ' ' + color(rest.join(' ')) : '')
   );
 }
