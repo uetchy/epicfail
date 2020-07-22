@@ -16,10 +16,23 @@ export interface EpicfailOption {
 export class EpicfailError extends Error {
   epicfail?: EpicfailOption;
 
-  constructor(message?: string) {
+  constructor(message?: string, option: EpicfailOption = {}) {
     super(message);
-    this.epicfail = {};
+    this.epicfail = option;
   }
+}
+
+export function fail(
+  message?: string,
+  {
+    soft = false,
+    option = {},
+  }: { soft?: boolean; option?: EpicfailOption } = {},
+) {
+  throw new EpicfailError(message, {
+    ...option,
+    ...(soft ? { stacktrace: false, message: false, env: false } : {}),
+  });
 }
 
 export default function handleErrors(cliFlags: EpicfailOption = {}) {
