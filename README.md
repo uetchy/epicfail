@@ -13,10 +13,10 @@
 
 > epicfail handles `unhandledRejection` and `uncaughtException` with graceful error message.
 
-- 🌐 Show bug tracker URL (`bugs.url` in `package.json`)
-- ⬇️ GitHub Issues-ready error logs (Markdown)
-- 👀 Suggest related issues
-- 🛠 Integration with external error logging services
+1. 🌐 Show bug tracker URL (`bugs.url` in `package.json`)
+1. ⬇️ GitHub Issues-ready error logs (Markdown)
+1. 👀 Suggest related issues
+1. 🛠 Integration with external error logging services
 
 ## Install
 
@@ -41,7 +41,7 @@ fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, ope
 
 ## Options
 
-### stacktrace (`default: true`)
+### stacktrace (default: `true`)
 
 Show stack trace.
 
@@ -55,7 +55,7 @@ epicfail({
 
 ![Without stacktrace](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/without-stacktrace.png)
 
-### issues (`default: false`)
+### issues (default: `false`)
 
 Search and show related issues.
 
@@ -96,6 +96,16 @@ Default values:
 
 ![With envinfo](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-envinfo.png)
 
+### message (default: `true`)
+
+Show bug tracker URL.
+
+```js
+import epicfail from 'epicfail';
+
+epicfail({ message: false });
+```
+
 ## Advanced Usage
 
 ### Sentry integration
@@ -119,3 +129,16 @@ fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, ope
 ```
 
 ![Sentry integration](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-sentry.png)
+
+### Runtime options
+
+```js
+import epicfail from 'epicfail';
+
+epicfail();
+
+const expected = new Error('Wooops');
+expected.epicfail = { stacktrace: false, env: false, message: false };
+
+throw expected;
+```
