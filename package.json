@@ -1,7 +1,7 @@
 {
   "name": "epicfail",
   "description": "Better error output for Node.js CLI apps",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Yasuaki Uechi <y@uechi.io> (https://uechi.io)",
   "scripts": {
     "build": "shx rm -rf dist && tsc",
