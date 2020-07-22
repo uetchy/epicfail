@@ -1,6 +1,6 @@
 <h1 align="center">epicfail</h1>
 <p align="center">Better error reporting for Node.js command-line apps.</p>
-<img  align="center" src="https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-stacktrace.png" />
+<img  align="center" src="https://raw.githubusercontent.com/uetchy/epicfail/master/docs/top.png" />
 
 ## Features
 
@@ -37,7 +37,7 @@ epicfail();
 fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, open 'foo'"
 ```
 
-![With stacktrace](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-stacktrace.png)
+![With stacktrace](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/full.png)
 
 ## Options
 
