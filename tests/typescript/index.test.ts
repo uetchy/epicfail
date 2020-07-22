@@ -11,7 +11,6 @@ describe('typescript', () => {
   });
 
   it('error', () => {
-    expect(strip(res.stdout)).toBe(`# Error
-Expected!`);
+    expect(strip(res.stdout)).toBe(`# Expected!`);
   });
 });

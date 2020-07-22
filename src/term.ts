@@ -32,7 +32,11 @@ export class Stash {
   }
 }
 
-export function title(color: any, title: string, ...rest: string[]): string {
+export function makeTitle(
+  color: any,
+  title: string,
+  ...rest: string[]
+): string {
   return (
     color(`# ${title}`) + (rest.length > 0 ? ' ' + color(rest.join(' ')) : '')
   );

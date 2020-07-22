@@ -3,7 +3,7 @@ import link from 'terminal-link';
 import { EnvInfo, genEnv } from './envinfo';
 import { findIssues, guessRepo, linkToNewIssue } from './github';
 import { getModulePackagePath, readJSON } from './json';
-import { Stash, title } from './term';
+import { Stash, makeTitle } from './term';
 
 export interface EpicfailOption {
   stacktrace?: boolean;
@@ -81,7 +81,11 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
 }
 
 function renderError(err: Error) {
-  return [title(chalk.red, err.name), chalk.red(err.message)].join('\n');
+  const title = err.name;
+  return (
+    (title !== 'Error' ? makeTitle(chalk.red, title) + '\n' : '') +
+    chalk.red('# ' + err.message)
+  );
 }
 
 function renderStacktrace(stack: string) {
@@ -102,7 +106,7 @@ async function renderIssues(message: string, repo: string) {
   const issues = await findIssues(message, repo);
   let res = [];
   if (issues && issues.length > 0) {
-    res.push('\n' + title(chalk.white, 'Issues'));
+    res.push('\n' + makeTitle(chalk.white, 'Issues'));
     res.push(
       issues
         .map(

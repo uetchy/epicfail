@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { run as runEnvinfo } from 'envinfo';
-import { title } from './term';
+import { makeTitle } from './term';
 
 export interface EnvInfo {
   System: ('OS' | 'CPU' | 'Memory' | 'Shell')[];
@@ -87,7 +87,7 @@ export async function genEnv(
   );
 
   const res = [];
-  res.push(title(chalk.green, 'Environment'));
+  res.push(makeTitle(chalk.green, 'Environment'));
   res.push(`- ${pkg.name}: ${pkg.version}`);
   res.push(
     Object.entries<any>(JSON.parse(env))
