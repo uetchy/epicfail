@@ -7,7 +7,7 @@
     "build": "shx rm -rf dist && tsc",
     "dev": "tsc -w",
     "prepublishOnly": "yarn build",
-    "test": "jest"
+    "test": "yarn build && jest"
   },
   "dependencies": {
     "chalk": "^4.1.0",

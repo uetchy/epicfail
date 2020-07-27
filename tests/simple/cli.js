@@ -1,6 +1,6 @@
-import handleErrors from '../..';
+import epicfail from '../..';
 import fs from 'fs';
 
-handleErrors();
+epicfail();
 
 fs.readFileSync('foo');

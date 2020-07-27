@@ -3,7 +3,7 @@ import link from 'terminal-link';
 import { EnvInfo, genEnv } from './envinfo';
 import { findIssues, guessRepo, linkToNewIssue } from './github';
 import { getModulePackagePath, readJSON } from './json';
-import { Stash, makeTitle } from './term';
+import { makeTitle, Stash } from './term';
 
 export interface EpicfailOption {
   stacktrace?: boolean;
@@ -24,15 +24,13 @@ export class EpicfailError extends Error {
 
 export function fail(
   message?: string,
-  {
-    soft = false,
-    option = {},
-  }: { soft?: boolean; option?: EpicfailOption } = {},
+  option: EpicfailOption = { stacktrace: false, message: false, env: false },
 ) {
-  throw new EpicfailError(message, {
-    ...option,
-    ...(soft ? { stacktrace: false, message: false, env: false } : {}),
-  });
+  failHarder(message, option);
+}
+
+export function failHarder(message?: string, Option: EpicfailOption = {}) {
+  throw new EpicfailError(message, Option);
 }
 
 export default function handleErrors(cliFlags: EpicfailOption = {}) {
