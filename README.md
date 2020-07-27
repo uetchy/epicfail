@@ -6,6 +6,7 @@
 
 [![npm-version]][npm-url]
 [![npm-downloads]][npm-url]
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/epicfail)
 
 [npm-version]: https://badgen.net/npm/v/epicfail
 [npm-downloads]: https://badgen.net/npm/dt/epicfail
