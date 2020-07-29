@@ -7,6 +7,7 @@
 [![npm-version]][npm-url]
 [![npm-downloads]][npm-url]
 ![npm bundle size](https://img.shields.io/bundlephobia/minzip/epicfail)
+[![Actions Status: test](https://github.com/uetchy/epicfail/workflows/test/badge.svg)](https://github.com/uetchy/epicfail/actions?query=test)
 
 [npm-version]: https://badgen.net/npm/v/epicfail
 [npm-downloads]: https://badgen.net/npm/dt/epicfail
