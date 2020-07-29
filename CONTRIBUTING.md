@@ -5,11 +5,12 @@
 ```bash
 git clone https://github.com/uetchy/epicfail.git && cd epicfail
 yarn install
-yarn build
+yarn dev
+yarn test
 ```
 
 ## Release Guide (Maintainers only)
 
 ```bash
-np
+yarn release
 ```

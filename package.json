@@ -7,6 +7,7 @@
     "build": "shx rm -rf dist && tsc",
     "dev": "tsc -w",
     "prepublishOnly": "yarn build",
+    "release": "release-it",
     "test": "yarn build && jest"
   },
   "dependencies": {
@@ -18,12 +19,14 @@
     "terminal-link": "^2.1.1"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^1.1.4",
     "@types/jest": "^26.0.4",
     "@types/node": "^14.0.20",
     "@types/node-fetch": "^2.5.7",
     "esm": "^3.2.25",
     "execa": "^4.0.3",
     "jest": "^26.1.0",
+    "release-it": "^13.6.6",
     "shx": "^0.3.2",
     "ts-jest": "^26.1.1",
     "ts-node": "^8.10.2",
