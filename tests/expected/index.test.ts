@@ -4,13 +4,13 @@ import { join } from 'path';
 
 let res: execa.ExecaReturnValue;
 
-describe('typescript', () => {
+describe('runtime', () => {
   beforeAll(async () => {
-    const runnable = join(__dirname, 'cli.ts');
-    res = await execa('ts-node', [runnable]);
+    const runnable = join(__dirname, 'cli.js');
+    res = await execa('node', ['-r', 'esm', runnable]);
   });
 
   it('error', () => {
-    expect(strip(res.stdout)).toBe(`Test`);
+    expect(strip(res.stdout)).toBe(`Error!`);
   });
 });

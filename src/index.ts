@@ -7,13 +7,15 @@ import { makeTitle, Stash } from './term';
 
 export type EventID = string;
 
+type MaybePromise<T> = T | Promise<T>;
+
 export interface EpicfailOption {
   stacktrace?: boolean;
   issues?: boolean;
   message?: boolean;
   env?: Partial<EnvInfo> | false;
-  onError?: (err: Error, ...rest: any[]) => undefined | EventID;
-  expected?: (err: Error) => boolean;
+  onError?: (err: Error, ...rest: any[]) => EventID | undefined;
+  assertExpected?: (err: Error) => MaybePromise<boolean>;
 }
 
 export class EpicfailError extends Error {
@@ -57,10 +59,10 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
       message = true,
       env,
       onError,
-      expected = () => false,
+      assertExpected = () => false,
     } = { ...cliFlags, ...(err.epicfail ?? {}) };
 
-    if (expected(err)) {
+    if (await Promise.resolve(assertExpected(err))) {
       return log(err);
     }
 

@@ -21,6 +21,27 @@
 1. 👀 Suggest related issues in GitHub
 1. 🛠 Integration with external error logging services
 
+## Table of Contents
+
+<!-- START mdmod {use: 'toc'} -->
+
+- [Features](#features)
+- [Install](#install)
+- [Use](#use)
+- [Options](#options)
+  - [stacktrace (default: `true`)](#stacktrace-default-true)
+  - [issues (default: `false`)](#issues-default-false)
+  - [env](#env)
+  - [message (default: `true`)](#message-default-true)
+  - [assertExpected (default: `() => false`)](#assertexpected-default---false)
+  - [onError (default: `undefined`)](#onerror-default-undefined)
+- [Advanced Usage](#advanced-usage)
+  - [Print error message without extra information](#print-error-message-without-extra-information)
+  - [Sentry integration](#sentry-integration)
+  - [Runtime options](#runtime-options)
+
+<!-- END mdmod -->
+
 ## Install
 
 ```bash
@@ -109,7 +130,50 @@ import epicfail from 'epicfail';
 epicfail({ message: false });
 ```
 
+### assertExpected (default: `() => false`)
+
+Print error message without any extra information if `assertExpected(err)` returns `true`.
+
+```js
+import epicfail from 'epicfail';
+
+epicfail({
+  assertExpected: (err) => err.name === 'ArgumentError',
+});
+```
+
+### onError (default: `undefined`)
+
+Pass the function that process the error and returns event id issued by external error aggregation service.
+
+```js
+import epicfail from 'epicfail';
+import Sentry from '@sentry/node';
+
+epicfail({
+  onError: (err) => Sentry.captureException(err), // will returns an event id issued by Sentry
+});
+```
+
 ## Advanced Usage
+
+### Print error message without extra information
+
+Use `log()` to print expected error message without any extra information (stack trace, environments, etc), and quit program.
+
+```js
+import epicfail, { log } from 'epicfail';
+
+epicfail();
+
+function cli(args) {
+  if (args.length === 0) {
+    log('usage: myapp <input>');
+  }
+}
+
+cli(process.argv.slice(2));
+```
 
 ### Sentry integration
 
@@ -141,8 +205,17 @@ import epicfail from 'epicfail';
 
 epicfail();
 
+// 1. Use epicfail property in Error instance.
 const expected = new Error('Wooops');
 expected.epicfail = { stacktrace: false, env: false, message: false };
-
 throw expected;
+
+// 2. Use fail method
+import { fail } from 'epicfail';
+fail('Wooops', { stacktrace: false, env: false, message: false };);
+
+// 3. Use EpicfailError class
+import { EpicfailError } from 'epicfail';
+const err = new EpicfailError('Wooops', { stacktrace: false, env: false, message: false };);
+throw err;
 ```
