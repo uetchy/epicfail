@@ -5,12 +5,15 @@ import { findIssues, guessRepo, linkToNewIssue } from './github';
 import { getModulePackagePath, readJSON } from './json';
 import { makeTitle, Stash } from './term';
 
+export type EventID = string;
+
 export interface EpicfailOption {
   stacktrace?: boolean;
   issues?: boolean;
   message?: boolean;
   env?: Partial<EnvInfo> | false;
-  onError?: (err: Error, ...rest: any[]) => undefined | string;
+  onError?: (err: Error, ...rest: any[]) => undefined | EventID;
+  expected?: (err: Error) => boolean;
 }
 
 export class EpicfailError extends Error {
@@ -22,15 +25,18 @@ export class EpicfailError extends Error {
   }
 }
 
-export function fail(
-  message?: string,
-  option: EpicfailOption = { stacktrace: false, message: false, env: false },
-) {
-  failHarder(message, option);
+export function fail(message?: Error | string, Option: EpicfailOption = {}) {
+  throw new EpicfailError(
+    message instanceof Error ? message.message : message,
+    Option,
+  );
 }
 
-export function failHarder(message?: string, Option: EpicfailOption = {}) {
-  throw new EpicfailError(message, Option);
+export function log(
+  message?: Error | string,
+  option: EpicfailOption = { stacktrace: false, message: false, env: false },
+) {
+  fail(message, option);
 }
 
 export default function handleErrors(cliFlags: EpicfailOption = {}) {
@@ -51,7 +57,12 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
       message = true,
       env,
       onError,
+      expected = () => false,
     } = { ...cliFlags, ...(err.epicfail ?? {}) };
+
+    if (expected(err)) {
+      return log(err);
+    }
 
     const stash = new Stash();
     const pkg = readJSON(pkgPath);
