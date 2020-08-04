@@ -4,11 +4,11 @@
   "version": "0.4.2",
   "author": "Yasuaki Uechi <y@uechi.io> (https://uechi.io)",
   "scripts": {
-    "build": "shx rm -rf dist && tsc",
+    "build": "npm run clean && tsc",
+    "clean": "shx rm -rf dist",
     "dev": "tsc -w",
-    "prepublishOnly": "yarn build",
-    "release": "release-it",
-    "test": "yarn build && jest"
+    "prepublishOnly": "npm run build",
+    "test": "npm run build && jest"
   },
   "dependencies": {
     "chalk": "^4.1.0",

@@ -12,5 +12,5 @@ yarn test
 ## Release Guide (Maintainers only)
 
 ```bash
-yarn release
+release-it
 ```
