@@ -73,7 +73,7 @@ export interface EnvInfo {
 
 export async function genEnv(
   envinfo: Partial<EnvInfo> | undefined,
-  pkg: any,
+  pkg: any
 ): Promise<string> {
   const env = await runEnvinfo(
     envinfo ?? {
@@ -83,7 +83,7 @@ export async function genEnv(
     {
       json: true,
       showNotFound: true,
-    },
+    }
   );
 
   const res = [];
@@ -96,10 +96,10 @@ export async function genEnv(
           ...s,
           ...Object.entries(i[1]).map(([k, v]) => [`${i[0]} > ${k}`, v]),
         ],
-        [],
+        []
       )
       .map(([k, v]) => `- ${k}: ${parseEnvInfo(v)}`)
-      .join('\n'),
+      .join('\n')
   );
   return chalk.green(res.join('\n'));
 }

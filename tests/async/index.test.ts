@@ -20,7 +20,7 @@ describe('async', () => {
 
   it('reporter', () => {
     expect(strip(res.stdout)).toContain(
-      'please report at https://github.com/uetchy/simple/issues',
+      'please report at https://github.com/uetchy/simple/issues'
     );
   });
 });

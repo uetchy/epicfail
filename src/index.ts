@@ -30,13 +30,13 @@ export class EpicfailError extends Error {
 export function fail(message?: Error | string, Option: EpicfailOption = {}) {
   throw new EpicfailError(
     message instanceof Error ? message.message : message,
-    Option,
+    Option
   );
 }
 
 export function log(
   message?: Error | string,
-  option: EpicfailOption = { stacktrace: false, message: false, env: false },
+  option: EpicfailOption = { stacktrace: false, message: false, env: false }
 ) {
   fail(message, option);
 }
@@ -69,7 +69,11 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
     const stash = new Stash();
     const pkg = readJSON(pkgPath);
     const reporterURL =
-      pkg?.bugs?.url ?? pkg?.bugs?.email ?? pkg?.bugs ?? pkg?.homepage ?? pkg?.author;
+      pkg?.bugs?.url ??
+      pkg?.bugs?.email ??
+      pkg?.bugs ??
+      pkg?.homepage ??
+      pkg?.author;
     const repo = guessRepo(reporterURL);
     const eventID = onError ? onError(err, ...rest) : undefined;
 
@@ -121,7 +125,7 @@ ${stack}
 
 async function renderEnv(
   env: Partial<EnvInfo> | undefined,
-  pkg: any,
+  pkg: any
 ): Promise<string> {
   return '\n' + (await genEnv(env, pkg));
 }
@@ -134,9 +138,9 @@ async function renderIssues(message: string, repo: string) {
     res.push(
       issues
         .map(
-          (issue: any) => `${chalk.green(`#${issue.number}`)} ${issue.title}`,
+          (issue: any) => `${chalk.green(`#${issue.number}`)} ${issue.title}`
         )
-        .join('\n'),
+        .join('\n')
     );
   }
   return res.join('\n') || undefined;
@@ -146,7 +150,7 @@ function renderBugTracker(
   reporterURL: string,
   stash: Stash,
   repo: string | undefined,
-  eventID: string | undefined,
+  eventID: string | undefined
 ): string {
   let detailedURL = reporterURL;
   if (repo) {
@@ -159,7 +163,7 @@ function renderBugTracker(
   return `\nIf you think this is a bug, please report at ${link(
     chalk.yellow(reporterURL),
     detailedURL,
-    { fallback: false },
+    { fallback: false }
   )} along with the information above${
     eventID ? ` and event id ${chalk.bold.magenta(eventID)}` : ''
   }.`;

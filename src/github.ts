@@ -5,8 +5,8 @@ export async function findIssues(q: string, repo: string) {
   try {
     const res = await fetch(
       `https://api.github.com/search/issues?q=${encodeURIComponent(
-        query,
-      )}&per_page=3`,
+        query
+      )}&per_page=3`
     ).then((res) => res.json());
     return res?.items;
   } catch (err) {

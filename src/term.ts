@@ -19,7 +19,7 @@ export class Stash {
       this.stash
         .filter((item) => (extra ? true : !item.extra))
         .map((item) => item.body)
-        .join('\n'),
+        .join('\n')
     );
   }
 
