@@ -69,7 +69,7 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
     const stash = new Stash();
     const pkg = readJSON(pkgPath);
     const reporterURL =
-      pkg?.bugs?.url ?? pkg?.bugs ?? pkg?.homepage ?? pkg?.author;
+      pkg?.bugs?.url ?? pkg?.bugs?.email ?? pkg?.bugs ?? pkg?.homepage ?? pkg?.author;
     const repo = guessRepo(reporterURL);
     const eventID = onError ? onError(err, ...rest) : undefined;
 
