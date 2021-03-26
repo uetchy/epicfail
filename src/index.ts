@@ -122,7 +122,10 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
   };
 
   process.on('unhandledRejection', handleError);
-  process.on('uncaughtException', handleError);
+  process.on('uncaughtException', async (...args) => {
+    await handleError(...args);
+    process.exit(0);
+  });
 }
 
 function renderError(err: Error) {
