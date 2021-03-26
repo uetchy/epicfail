@@ -25,20 +25,22 @@
 
 <!-- START mdmod {use: 'toc'} -->
 
-- [Features](#features)
-- [Install](#install)
-- [Use](#use)
-- [Options](#options)
-  - [stacktrace (default: `true`)](#stacktrace-default-true)
-  - [issues (default: `false`)](#issues-default-false)
-  - [env](#env)
-  - [message (default: `true`)](#message-default-true)
-  - [assertExpected (default: `() => false`)](#assertexpected-default---false)
-  - [onError (default: `undefined`)](#onerror-default-undefined)
-- [Advanced Usage](#advanced-usage)
-  - [Print error message without extra information](#print-error-message-without-extra-information)
-  - [Sentry integration](#sentry-integration)
-  - [Runtime options](#runtime-options)
+- [epicfail](#epicfail)
+  - [Features](#features)
+  - [Table of Contents](#table-of-contents)
+  - [Install](#install)
+  - [Use](#use)
+  - [Options](#options)
+    - [stacktrace (default: `true`)](#stacktrace-default-true)
+    - [issues (default: `false`)](#issues-default-false)
+    - [env](#env)
+    - [message (default: `true`)](#message-default-true)
+    - [assertExpected (default: `() => false`)](#assertexpected-default---false)
+    - [onError (default: `undefined`)](#onerror-default-undefined)
+  - [Advanced Usage](#advanced-usage)
+    - [Print error message without extra information](#print-error-message-without-extra-information)
+    - [Sentry integration](#sentry-integration)
+    - [Runtime options](#runtime-options)
 
 <!-- END mdmod -->
 
