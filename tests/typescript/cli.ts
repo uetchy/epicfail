@@ -1,5 +1,5 @@
-import handleErrors, { log } from '../..';
+import handleErrors, { logAndExit } from '../..';
 
 handleErrors();
 
-log('Test');
+logAndExit('Test');

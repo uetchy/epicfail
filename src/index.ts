@@ -10,9 +10,10 @@ export type EventID = string;
 type MaybePromise<T> = T | Promise<T>;
 
 export interface EpicfailOption {
+  name?: string;
+  message?: boolean;
   stacktrace?: boolean;
   issues?: boolean;
-  message?: boolean;
   env?: Partial<EnvInfo> | false;
   onError?: (err: Error, ...rest: any[]) => EventID | undefined;
   assertExpected?: (err: Error) => MaybePromise<boolean>;
@@ -23,26 +24,39 @@ export class EpicfailError extends Error {
 
   constructor(message?: string, option: EpicfailOption = {}) {
     super(message);
+
+    if (option.name) this.name = option.name;
+
     this.epicfail = option;
   }
 }
 
-export function fail(message?: Error | string, Option: EpicfailOption = {}) {
+export function fail(
+  message?: Error | string,
+  Option: EpicfailOption = {}
+): never {
   throw new EpicfailError(
     message instanceof Error ? message.message : message,
     Option
   );
 }
 
-export function log(
+export function logAndExit(
   message?: Error | string,
-  option: EpicfailOption = { stacktrace: false, message: false, env: false }
-) {
-  fail(message, option);
+  option: EpicfailOption = {}
+): never {
+  fail(message, {
+    ...{ stacktrace: false, message: false, env: false },
+    ...option,
+  });
 }
 
 export default function handleErrors(cliFlags: EpicfailOption = {}) {
-  const pkgPath = getModulePackagePath(module.parent!.filename);
+  if (!module.parent) {
+    // couldn't handle errors
+    return;
+  }
+  const pkgPath = getModulePackagePath(module.parent.filename);
   if (!pkgPath) throw new Error('Could not find package.json for the module.');
 
   const handleError = async (
@@ -63,7 +77,7 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
     } = { ...cliFlags, ...(err.epicfail ?? {}) };
 
     if (await Promise.resolve(assertExpected(err))) {
-      return log(err);
+      return logAndExit(err);
     }
 
     const stash = new Stash();

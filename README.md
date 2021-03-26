@@ -53,12 +53,12 @@ yarn add epicfail
 ## Use
 
 ```js
-import epicfail from 'epicfail'
+import epicfail from 'epicfail';
 
-epicfail()
+epicfail();
 
 // your CLI app code goes here
-fs.readFileSync('foo') // => will cause "ENOENT: no such file or directory, open 'foo'"
+fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, open 'foo'"
 ```
 
 ![With stacktrace](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/full.png)
@@ -70,11 +70,11 @@ fs.readFileSync('foo') // => will cause "ENOENT: no such file or directory, open
 Show stack trace.
 
 ```js
-import epicfail from 'epicfail'
+import epicfail from 'epicfail';
 
 epicfail({
   stacktrace: false,
-})
+});
 ```
 
 ![Without stacktrace](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/without-stacktrace.png)
@@ -84,11 +84,11 @@ epicfail({
 Search and show related issues in GitHub Issues.
 
 ```js
-import epicfail from 'epicfail'
+import epicfail from 'epicfail';
 
 epicfail({
   issues: true,
-})
+});
 ```
 
 ![With issues](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-issues.png)
@@ -98,7 +98,7 @@ epicfail({
 Show environment information. You can find all possible options [here](https://github.com/tabrindle/envinfo#cli-usage). Set to `false` to disable it.
 
 ```js
-import epicfail from 'epicfail'
+import epicfail from 'epicfail';
 
 epicfail({
   env: {
@@ -106,7 +106,7 @@ epicfail({
     Binaries: ['Node', 'Yarn', 'npm'],
     Utilities: ['Git'],
   },
-})
+});
 ```
 
 Default values:
@@ -125,21 +125,21 @@ Default values:
 Show bug tracker URL and ask users to report the error.
 
 ```js
-import epicfail from 'epicfail'
+import epicfail from 'epicfail';
 
-epicfail({ message: false })
+epicfail({ message: false });
 ```
 
 ### assertExpected (default: `() => false`)
 
-While processing an error, if `assertExpected(error)` returns `true`, epicfail just prints the error message without any extra information; which is the same behaviour as the `log()` function described below.
+While processing an error, if `assertExpected(error)` returns `true`, epicfail just prints the error message without any extra information; which is the same behaviour as the `logAndExit()` function described below.
 
 ```js
-import epicfail from 'epicfail'
+import epicfail from 'epicfail';
 
 epicfail({
   assertExpected: (err) => err.name === 'ArgumentError',
-})
+});
 ```
 
 ### onError (default: `undefined`)
@@ -147,53 +147,65 @@ epicfail({
 Pass the function that process the error and returns event id issued by external error aggregation service.
 
 ```js
-import epicfail from 'epicfail'
-import Sentry from '@sentry/node'
+import epicfail from 'epicfail';
+import Sentry from '@sentry/node';
 
 epicfail({
   onError: (err) => Sentry.captureException(err), // will returns an event id issued by Sentry
-})
+});
 ```
 
 ## Advanced Usage
 
 ### Print error message without extra information
 
-Use `log()` to print error message in red text without any extra information (stack trace, environments, etc), then quit program. It is useful when you just want to show the expected error message without messing STDOUT around with verbose log messages.
+Use `logAndExit()` to print error message in red text without any extra information (stack trace, environments, etc), then quit program. It is useful when you just want to show the expected error message without messing STDOUT around with verbose log messages.
 
 ```js
-import epicfail, { log } from 'epicfail'
+import epicfail, { logAndExit } from 'epicfail';
 
-epicfail()
+epicfail();
 
 function cli(args) {
   if (args.length === 0) {
-    log('usage: myapp <input>')
+    logAndExit('usage: myapp <input>');
   }
 }
 
-cli(process.argv.slice(2))
+cli(process.argv.slice(2));
+```
+
+You can also pass an Error instance:
+
+```js
+function cli(args) {
+  try {
+    someFunction();
+  } catch (err) {
+    logAndExit(err);
+  }
+}
 ```
 
 ### Sentry integration
 
 ```js
-import epicfail from 'epicfail'
-import Sentry from '@sentry/node'
+import epicfail from 'epicfail';
+import Sentry from '@sentry/node';
 
 epicfail({
   stacktrace: false,
   env: false,
   onError: Sentry.captureException, // will returns event_id issued by Sentry
-})
+});
 
 Sentry.init({
   dsn: '<your sentry token here>',
   defaultIntegrations: false, // required
-})
+});
 
 // your CLI app code goes here
-fs.readFileSync('foo') // => will cause "ENOENT: no such file or directory, open 'foo'"
+fs.readFileSync('foo'); // => will cause "ENOENT: no such file or directory, open 'foo'"
 ```
 
 ![Sentry integration](https://raw.githubusercontent.com/uetchy/epicfail/master/docs/with-sentry.png)
