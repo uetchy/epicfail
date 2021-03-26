@@ -52,11 +52,13 @@ export function logAndExit(
 }
 
 export default function handleErrors(cliFlags: EpicfailOption = {}) {
-  if (!module.parent) {
+  const parent = require.main || module.parent;
+  if (!parent) {
     // couldn't handle errors
     return;
   }
-  const pkgPath = getModulePackagePath(module.parent.filename);
+
+  const pkgPath = getModulePackagePath(parent.filename);
   if (!pkgPath) throw new Error('Could not find package.json for the module.');
 
   const handleError = async (
@@ -67,6 +69,7 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
     if (!(err instanceof Error)) {
       err = new Error(JSON.stringify(err, null, 2));
     }
+
     const {
       stacktrace = true,
       issues = false,
