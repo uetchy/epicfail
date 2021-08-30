@@ -1,9 +1,9 @@
-import chalk from 'chalk';
-import link from 'terminal-link';
-import { EnvInfo, genEnv } from './envinfo';
-import { findIssues, guessRepo, linkToNewIssue } from './github';
-import { getModulePackagePath, readJSON } from './json';
-import { makeTitle, Stash } from './term';
+import chalk from "chalk";
+import link from "terminal-link";
+import { EnvInfo, genEnv } from "./envinfo";
+import { findIssues, guessRepo, linkToNewIssue } from "./github";
+import { getModulePackagePath, readJSON } from "./json";
+import { makeTitle, Stash } from "./term";
 
 export type EventID = string;
 
@@ -51,15 +51,28 @@ export function logAndExit(
   });
 }
 
-export default function handleErrors(cliFlags: EpicfailOption = {}) {
-  const parent = require.main || module.parent;
-  if (!parent) {
-    // couldn't handle errors
-    return;
-  }
+export function epicfail(cliFlags: EpicfailOption = {}) {
+  console.log(import.meta, require.main, module);
+  const parentFile = require.main?.filename;
 
-  const pkgPath = getModulePackagePath(parent.filename);
-  if (!pkgPath) throw new Error('Could not find package.json for the module.');
+  const pkgPath = getModulePackagePath(parentFile);
+  if (!pkgPath) throw new Error("Could not find package.json for the module.");
+
+  function findMeta() {
+    if (pkgPath) {
+      const pkg = readJSON(pkgPath);
+      const reporterURL =
+        pkg?.bugs?.url ??
+        pkg?.bugs?.email ??
+        pkg?.bugs ??
+        pkg?.homepage ??
+        pkg?.author;
+      const repo = guessRepo(reporterURL);
+      return { reporterURL, repo };
+    } else {
+      return { reporterURL: null, repo: parentFile };
+    }
+  }
 
   const handleError = async (
     err: EpicfailError,
@@ -84,14 +97,6 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
     }
 
     const stash = new Stash();
-    const pkg = readJSON(pkgPath);
-    const reporterURL =
-      pkg?.bugs?.url ??
-      pkg?.bugs?.email ??
-      pkg?.bugs ??
-      pkg?.homepage ??
-      pkg?.author;
-    const repo = guessRepo(reporterURL);
     const eventID = onError ? onError(err, ...rest) : undefined;
 
     // show error message
@@ -121,8 +126,8 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
     stash.render();
   };
 
-  process.on('unhandledRejection', handleError);
-  process.on('uncaughtException', async (...args) => {
+  process.on("unhandledRejection", handleError);
+  process.on("uncaughtException", async (...args) => {
     await handleError(...args);
     process.exit(0);
   });
@@ -131,7 +136,7 @@ export default function handleErrors(cliFlags: EpicfailOption = {}) {
 function renderError(err: Error) {
   const title = err.name;
   return (
-    (title !== 'Error' ? makeTitle(chalk.red, title) + '\n' : '') +
+    (title !== "Error" ? makeTitle(chalk.red, title) + "\n" : "") +
     chalk.red(err.message)
   );
 }
@@ -147,23 +152,23 @@ async function renderEnv(
   env: Partial<EnvInfo> | undefined,
   pkg: any
 ): Promise<string> {
-  return '\n' + (await genEnv(env, pkg));
+  return "\n" + (await genEnv(env, pkg));
 }
 
 async function renderIssues(message: string, repo: string) {
   const issues = await findIssues(message, repo);
   let res = [];
   if (issues && issues.length > 0) {
-    res.push('\n' + makeTitle(chalk.white, 'Issues'));
+    res.push("\n" + makeTitle(chalk.white, "Issues"));
     res.push(
       issues
         .map(
           (issue: any) => `${chalk.green(`#${issue.number}`)} ${issue.title}`
         )
-        .join('\n')
+        .join("\n")
     );
   }
-  return res.join('\n') || undefined;
+  return res.join("\n") || undefined;
 }
 
 function renderBugTracker(
@@ -185,6 +190,6 @@ function renderBugTracker(
     detailedURL,
     { fallback: false }
   )} along with the information above${
-    eventID ? ` and event id ${chalk.bold.magenta(eventID)}` : ''
+    eventID ? ` and event id ${chalk.bold.magenta(eventID)}` : ""
   }.`;
 }

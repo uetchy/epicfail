@@ -2,8 +2,9 @@
   "name": "test",
   "version": "1.0.0",
   "main": "cli.js",
+  "type": "module",
   "dependencies": {
-    "epicfail": "link:../../"
+    "epicfail": "../../"
   },
   "bugs": "https://github.com/uetchy/simple/issues"
 }
