@@ -1,5 +1,5 @@
-import epicfail, { logAndExit } from '../../dist';
+import { epicfail, logAndExit } from "../../dist";
 
 epicfail();
 
-logAndExit('nailed', { name: 'NiceError' });
+logAndExit("nailed", { name: "NiceError" });

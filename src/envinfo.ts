@@ -1,71 +1,72 @@
-import chalk from 'chalk';
-import { run as runEnvinfo } from 'envinfo';
-import { makeTitle } from './term';
+import chalk from "chalk";
+import envinfo from "envinfo";
+const { run: runEnvinfo } = envinfo;
+import { makeTitle } from "./term";
 
 export interface EnvInfo {
-  System: ('OS' | 'CPU' | 'Memory' | 'Shell')[];
-  Binaries: ('Node' | 'Yarn' | 'npm' | 'Watchman')[];
+  System: ("OS" | "CPU" | "Memory" | "Shell")[];
+  Binaries: ("Node" | "Yarn" | "npm" | "Watchman")[];
   Managers: (
-    | 'Cargo'
-    | 'CocoaPods'
-    | 'Composer'
-    | 'Gradle'
-    | 'Homebrew'
-    | 'Maven'
-    | 'pip2'
-    | 'pip3'
-    | 'RubyGems'
+    | "Cargo"
+    | "CocoaPods"
+    | "Composer"
+    | "Gradle"
+    | "Homebrew"
+    | "Maven"
+    | "pip2"
+    | "pip3"
+    | "RubyGems"
   )[];
   Utilities: (
-    | 'CMake'
-    | 'Make'
-    | 'GCC'
-    | 'Git'
-    | 'Mercurial'
-    | 'Clang'
-    | 'Subversion'
+    | "CMake"
+    | "Make"
+    | "GCC"
+    | "Git"
+    | "Mercurial"
+    | "Clang"
+    | "Subversion"
   )[];
-  Servers: ('Apache' | 'Nginx')[];
+  Servers: ("Apache" | "Nginx")[];
   Virtualization: {
     Docker: string;
     Parallels: string;
     VirtualBox: string;
   };
   SDKs: {
-    'iOS SDK': 'Platforms'[];
-    'Android SDK': ('API Levels' | 'Build Tools' | 'System Images')[];
+    "iOS SDK": "Platforms"[];
+    "Android SDK": ("API Levels" | "Build Tools" | "System Images")[];
   };
   IDEs: (
-    | 'Android Studio'
-    | 'Atom'
-    | 'Emacs'
-    | 'Nano'
-    | 'VSCode'
-    | 'Vim'
-    | 'Xcode'
+    | "Android Studio"
+    | "Atom"
+    | "Emacs"
+    | "Nano"
+    | "VSCode"
+    | "Vim"
+    | "Xcode"
   )[];
   Languages: (
-    | 'Bash'
-    | 'Elixir'
-    | 'Go'
-    | 'Java'
-    | 'Perl'
-    | 'PHP'
-    | 'Python'
-    | 'Python3'
-    | 'R'
-    | 'Ruby'
-    | 'Rust'
+    | "Bash"
+    | "Elixir"
+    | "Go"
+    | "Java"
+    | "Perl"
+    | "PHP"
+    | "Python"
+    | "Python3"
+    | "R"
+    | "Ruby"
+    | "Rust"
   )[];
-  Databases: ('MongoDB' | 'MySQL' | 'PostgreSQL' | 'SQLite')[];
+  Databases: ("MongoDB" | "MySQL" | "PostgreSQL" | "SQLite")[];
   Browsers: (
-    | 'Chrome'
-    | 'Chrome Canary'
-    | 'Firefox'
-    | 'Firefox Developer Edition'
-    | 'Firefox Nightly'
-    | 'Safari'
-    | 'Safari Technology Preview'
+    | "Chrome"
+    | "Chrome Canary"
+    | "Firefox"
+    | "Firefox Developer Edition"
+    | "Firefox Nightly"
+    | "Safari"
+    | "Safari Technology Preview"
   )[];
   npmPackages: string[];
   npmGlobalPackages: string[];
@@ -77,8 +78,8 @@ export async function genEnv(
 ): Promise<string> {
   const env = await runEnvinfo(
     envinfo ?? {
-      System: ['OS'],
-      Binaries: ['Node'],
+      System: ["OS"],
+      Binaries: ["Node"],
     },
     {
       json: true,
@@ -87,7 +88,7 @@ export async function genEnv(
   );
 
   const res = [];
-  res.push(makeTitle(chalk.green, 'Environment'));
+  res.push(makeTitle(chalk.green, "Environment"));
   res.push(`- ${pkg.name}: ${pkg.version}`);
   res.push(
     Object.entries<any>(JSON.parse(env))
@@ -99,18 +100,18 @@ export async function genEnv(
         []
       )
       .map(([k, v]) => `- ${k}: ${parseEnvInfo(v)}`)
-      .join('\n')
+      .join("\n")
   );
-  return chalk.green(res.join('\n'));
+  return chalk.green(res.join("\n"));
 }
 
 function parseEnvInfo(v: any): string {
-  if (typeof v === 'string') {
+  if (typeof v === "string") {
     return v;
-  } else if (typeof v === 'object' && 'version' in v) {
-    return `${v.version}${v.path ? ` - ${v.path}` : ''}`;
+  } else if (typeof v === "object" && "version" in v) {
+    return `${v.version}${v.path ? ` - ${v.path}` : ""}`;
   } else if (Array.isArray(v)) {
-    return v.join(', ');
+    return v.join(", ");
   } else {
     return JSON.stringify(v);
   }
