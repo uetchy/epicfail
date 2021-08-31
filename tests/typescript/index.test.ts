@@ -1,16 +1,21 @@
-import strip from "strip-ansi";
 import execa from "execa";
 import { join } from "path";
 
 let res: execa.ExecaReturnValue;
 
+const sandboxPath = join(__dirname, "sandbox");
+
 describe("typescript", () => {
+  jest.setTimeout(1000 * 60);
+
   beforeAll(async () => {
-    const runnable = join(__dirname, "cli.ts");
-    res = await execa("ts-node", [runnable]);
+    await execa("yarn", ["install", "--no-lockfile"], { cwd: sandboxPath });
+
+    const runnable = join(sandboxPath, "cli.ts");
+    res = await execa("ts-node", [runnable], { cwd: sandboxPath });
   });
 
   it("error", () => {
-    expect(strip(res.stdout)).toBe(`Test`);
+    expect(res.stdout).toContain(`Test`);
   });
 });

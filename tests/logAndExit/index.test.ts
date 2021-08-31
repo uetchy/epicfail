@@ -1,17 +1,21 @@
-import execa from 'execa';
-import { join } from 'path';
-import strip from 'strip-ansi';
+import execa from "execa";
+import { join } from "path";
 
 let res: execa.ExecaReturnValue;
 
-describe('logAndExit', () => {
+const sandboxPath = join(__dirname, "sandbox");
+
+describe("logAndExit", () => {
+  jest.setTimeout(1000 * 60);
+
   beforeAll(async () => {
-    const runnable = join(__dirname, 'cli.js');
-    res = await execa('node', ['-r', 'esm', runnable]);
+    await execa("yarn", ["install", "--no-lockfile", "--cwd", sandboxPath]);
+
+    const runnable = join(sandboxPath, "cli.js");
+    res = await execa("node", [runnable], { cwd: sandboxPath });
   });
 
-  it('with title', () => {
-    expect(strip(res.stdout)).toEqual(`# NiceError
-nailed`);
+  it("with title", () => {
+    expect(res.stdout).toContain(`nailed`);
   });
 });

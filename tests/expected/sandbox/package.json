@@ -1,0 +1,9 @@
+{
+  "name": "expected",
+  "version": "1.0.0",
+  "main": "cli.js",
+  "dependencies": {
+    "epicfail": "link:../../../"
+  },
+  "bugs": "https://github.com/uetchy/expected/issues"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "main": "cli.ts",
+  "dependencies": {
+    "epicfail": "link:../../../"
+  },
+  "bugs": "https://github.com/uetchy/typescript/issues"
+}

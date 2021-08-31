@@ -1,5 +1,5 @@
 import { epicfail, logAndExit } from "epicfail";
 
-epicfail();
+epicfail(require.main.filename);
 
 logAndExit("Test");
