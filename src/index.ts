@@ -51,28 +51,22 @@ export function logAndExit(
   });
 }
 
-export function epicfail(cliFlags: EpicfailOption = {}) {
-  console.log(import.meta, require.main, module);
-  const parentFile = require.main?.filename;
+export function epicfail(
+  moduleEntrypoint: string,
+  cliFlags: EpicfailOption = {}
+) {
+  const pkgPath = getModulePackagePath(moduleEntrypoint);
+  if (!pkgPath) return;
 
-  const pkgPath = getModulePackagePath(parentFile);
-  if (!pkgPath) throw new Error("Could not find package.json for the module.");
+  const pkg = readJSON(pkgPath);
 
-  function findMeta() {
-    if (pkgPath) {
-      const pkg = readJSON(pkgPath);
-      const reporterURL =
-        pkg?.bugs?.url ??
-        pkg?.bugs?.email ??
-        pkg?.bugs ??
-        pkg?.homepage ??
-        pkg?.author;
-      const repo = guessRepo(reporterURL);
-      return { reporterURL, repo };
-    } else {
-      return { reporterURL: null, repo: parentFile };
-    }
-  }
+  const reporterURL =
+    pkg?.bugs?.url ??
+    pkg?.bugs?.email ??
+    pkg?.bugs ??
+    pkg?.homepage ??
+    pkg?.author;
+  const repo = guessRepo(reporterURL);
 
   const handleError = async (
     err: EpicfailError,

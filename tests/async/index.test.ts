@@ -1,26 +1,29 @@
-import execa from 'execa';
-import strip from 'strip-ansi';
-import { join } from 'path';
+import execa from "execa";
+import { join } from "path";
 
 let res: execa.ExecaReturnValue;
 
-describe('async', () => {
+const sandboxPath = join(__dirname, "sandbox");
+
+describe("async", () => {
+  jest.setTimeout(1000 * 60);
+
   beforeAll(async () => {
-    const runnable = join(__dirname, 'cli.js');
-    res = await execa('node', [runnable]);
+    await execa("yarn", ["install", "--cwd", sandboxPath]);
+
+    const runnable = join(sandboxPath, "cli.js");
+    res = await execa("node", [runnable], { cwd: sandboxPath });
   });
 
-  it('error', () => {
-    expect(res.stdout).toContain('Woops');
+  it("error", () => {
+    expect(res.stdout).toContain("Woops");
   });
 
-  it('env', () => {
-    expect(res.stdout).toContain('test: 1.0.0');
+  it("env", () => {
+    expect(res.stdout).toContain("async: 1.0.0");
   });
 
-  it('reporter', () => {
-    expect(strip(res.stdout)).toContain(
-      'please report at https://github.com/uetchy/simple/issues'
-    );
+  it("reporter", () => {
+    expect(res.stdout).toContain("https://github.com/uetchy/async/issues");
   });
 });

@@ -5,11 +5,13 @@
   "author": "Yasuaki Uechi <y@uechi.io> (https://uechi.io)",
   "type": "module",
   "scripts": {
-    "build": "npm run clean && microbundle --target node",
-    "clean": "shx rm -rf lib",
+    "build": "microbundle --target node",
+    "clean": "shx rm -rf lib tests/**/node_modules",
     "dev": "microbundle watch --target node",
+    "prebuild": "npm run clean",
     "prepublishOnly": "npm run build",
-    "test": "npm run build && jest",
+    "pretest": "npm run build",
+    "test": "jest",
     "toc": "mdmod README.md"
   },
   "types": "./lib/index.d.ts",
@@ -27,7 +29,7 @@
   "devDependencies": {
     "@release-it/conventional-changelog": "^3.3.0",
     "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.6",
+    "@types/node": "^16.7.8",
     "@types/node-fetch": "^2.5.12",
     "esm": "^3.2.25",
     "execa": "^5.1.1",

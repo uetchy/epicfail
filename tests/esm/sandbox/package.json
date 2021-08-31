@@ -1,0 +1,10 @@
+{
+  "name": "esm",
+  "version": "1.0.0",
+  "main": "cli.js",
+  "type": "module",
+  "dependencies": {
+    "epicfail": "link:../../../"
+  },
+  "bugs": "https://github.com/uetchy/esm/issues"
+}

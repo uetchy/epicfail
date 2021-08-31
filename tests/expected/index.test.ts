@@ -1,16 +1,21 @@
-import strip from 'strip-ansi';
-import execa from 'execa';
-import { join } from 'path';
+import execa from "execa";
+import { join } from "path";
 
 let res: execa.ExecaReturnValue;
 
-describe('runtime', () => {
+const sandboxPath = join(__dirname, "sandbox");
+
+describe("expected", () => {
+  jest.setTimeout(1000 * 60);
+
   beforeAll(async () => {
-    const runnable = join(__dirname, 'cli.js');
-    res = await execa('node', ['-r', 'esm', runnable]);
+    await execa("yarn", ["install", "--cwd", sandboxPath]);
+
+    const runnable = join(sandboxPath, "cli.js");
+    res = await execa("node", [runnable], { cwd: sandboxPath });
   });
 
-  it('error', () => {
-    expect(strip(res.stdout)).toBe(`Error!`);
+  it("error", () => {
+    expect(res.stdout).toContain(`Error!`);
   });
 });

@@ -1,6 +1,6 @@
 const { epicfail } = require("epicfail");
 const fs = require("fs");
 
-epicfail();
+epicfail(require.main.filename);
 
 fs.readFileSync("foo");

@@ -1,11 +1,11 @@
 # https://github.com/release-it/release-it/blob/master/config/release-it.json
 git:
-  commitMessage: 'chore: release v${version}'
+  commitMessage: "chore: release v${version}"
 github:
   release: true
-  releaseName: 'v${version}'
+  releaseName: "v${version}"
 hooks:
-  before:init: npm run test
+  before:init: npm test
 plugins:
-  '@release-it/conventional-changelog': # https://github.com/release-it/conventional-changelog
+  "@release-it/conventional-changelog": # https://github.com/release-it/conventional-changelog
     preset: angular

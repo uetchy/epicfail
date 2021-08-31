@@ -1,0 +1,10 @@
+{
+  "name": "cjs",
+  "version": "1.0.0",
+  "main": "cli.js",
+  "type": "commonjs",
+  "dependencies": {
+    "epicfail": "link:../../../"
+  },
+  "bugs": "https://github.com/uetchy/cjs/issues"
+}
