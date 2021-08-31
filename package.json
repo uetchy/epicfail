@@ -1,7 +1,7 @@
 {
   "name": "epicfail",
   "description": "Better error output for Node.js CLI apps",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "author": "Yasuaki Uechi <y@uechi.io> (https://uechi.io)",
   "type": "module",
   "scripts": {
